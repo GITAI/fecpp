@@ -6,13 +6,16 @@ DEBUGFLAGS=-g
 
 CXXFLAGS=$(OPTFLAGS) $(DEBUGFLAGS) $(WARNINGS)
 
-HAVE_SSE2=$(shell grep sse2 /proc/cpuinfo)
-ifneq ($(HAVE_SSE2),)
-	CXXFLAGS += -msse2 -DHAVE_SSE2
-endif
-HAVE_SSSE3=$(shell grep ssse3 /proc/cpuinfo)
-ifneq ($(HAVE_SSSE3),)
-	CXXFLAGS += -mssse3 -DHAVE_SSSE3
+ARCH=$(shell dpkg-architecture -qDEB_BUILD_ARCH)
+ifeq ($(ARCH),amd64)
+	HAVE_SSE2=$(shell grep sse2 /proc/cpuinfo)
+	ifneq ($(HAVE_SSE2),)
+		CXXFLAGS += -msse2 -DHAVE_SSE2
+	endif
+	HAVE_SSSE3=$(shell grep ssse3 /proc/cpuinfo)
+	ifneq ($(HAVE_SSSE3),)
+		CXXFLAGS += -mssse3 -DHAVE_SSSE3
+	endif
 endif
 
 PROGS = benchmark zfec test_recovery gen_test_vec
